@@ -1,58 +1,44 @@
 import mysql.connector as db_connector
 import types_enums
 
+MY_DB_CONNECTION = db_connector.connect(host='localhost', user='root', database='iair')
 
-def setup_database() -> bool:
+def setup_database():
     my_db_connection = db_connector.connect(host='localhost', user='root')
 
     try:
         cursor = my_db_connection.cursor()
 
-        initialization_query: str = ('DROP DATABASE IF EXISTS iAir; '
-                                     'CREATE DATABASE IF NOT EXISTS iAir; '
-                                     'USE iAir; '
-    
-                                     'CREATE TABLE Air_Condition ( '
-                                     'Condition_ID 			INT AUTO_INCREMENT PRIMARY KEY, '
-                                     'Condition_Name			VARCHAR(50), '
-                                     'Enum_Index				INT '
-                                     '); '
-    
-                                     'CREATE TABLE Command ( '
-                                     'Command_ID 			INT AUTO_INCREMENT PRIMARY KEY, '
-                                     'Command_Name		VARCHAR(50), '
-                                     'Enum_Index			INT '
-                                     '); '
-    
-                                     'CREATE TABLE ActivityLog ( '
-                                     'Activity_ID					INT AUTO_INCREMENT PRIMARY KEY, '
-                                     'Condition_ID					INT NOT NULL, '
-                                     'Temperature					DECIMAL (5, 2) NOT NULL, '
-                                     'Humidity						DECIMAL (5, 2) NOT NULL, '
-                                     'Carbon_Dioxide_Level			DECIMAL (6, 2) NOT NULL, '
-                                     'Command_ID					INT NOT NULL, '
-                                     'Activity_Time					TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
-                                     'CONSTRAINT `fk_condition` '
-                                     '    FOREIGN KEY (Condition_ID) REFERENCES Air_Condition (Condition_ID) '
-                                     '    ON DELETE CASCADE '
-                                     '    ON UPDATE RESTRICT, '
-                                     'CONSTRAINT `fk_command` '
-                                     '    FOREIGN KEY (Command_ID) REFERENCES Command (Command_ID) '
-                                     '    ON DELETE CASCADE '
-                                     '    ON UPDATE RESTRICT '
-                                     ');'
-                                     )
-        cursor.execute(initialization_query)
+        cursor.execute('DROP DATABASE IF EXISTS iAir; ')
+        cursor.execute('CREATE DATABASE IF NOT EXISTS iAir; ')
 
         my_db_connection.commit()
-        cursor.
-        cursor.execute("SHOW DATABASES")
+
+    except Exception as e:
+        print(e.args)
+
+    finally:
+        if my_db_connection.is_connected():
+            cursor.close()
+            my_db_connection.close()
+            print("MySQL connection is closed.")
+
+
+def check_db_existence() -> bool:
+    my_db_connection = db_connector.connect(host='localhost', user='root')
+
+    try:
+        cursor = my_db_connection.cursor()
+
+        check_query: str = "SHOW DATABASES;";
+
+        cursor.execute(check_query)
 
         databases = cursor.fetchall()
 
         print(databases)
 
-        if 'iAir' in databases:
+        if ('iair',) in databases:
             print("Database created successfully.")
             return True
         else:
@@ -60,8 +46,98 @@ def setup_database() -> bool:
             return False
 
     except Exception as e:
-        return False
         print(e.args)
+        return False
+
+    finally:
+        if my_db_connection.is_connected():
+            cursor.close()
+            my_db_connection.close()
+            print("MySQL connection is closed.")
+
+
+def setup_tables():
+    my_db_connection = MY_DB_CONNECTION
+
+    try:
+        cursor = my_db_connection.cursor()
+
+        create_air_condition_table: str =(
+            'CREATE TABLE Air_Condition ( '
+            'Condition_ID 			INT AUTO_INCREMENT PRIMARY KEY, '
+            'Condition_Name			VARCHAR(50), '
+            'Enum_Index				INT '
+            '); '
+        )
+
+        create_command_table: str = (
+            'CREATE TABLE Command ( '
+            'Command_ID 			INT AUTO_INCREMENT PRIMARY KEY, '
+            'Command_Name		VARCHAR(50), '
+            'Enum_Index			INT '
+            '); '
+        )
+
+        create_activity_log_table: str = (
+            'CREATE TABLE ActivityLog ( '
+            'Activity_ID					INT AUTO_INCREMENT PRIMARY KEY, '
+            'Condition_ID					INT NOT NULL, '
+            'Temperature					DECIMAL (5, 2) NOT NULL, '
+            'Humidity						DECIMAL (5, 2) NOT NULL, '
+            'Carbon_Dioxide_Level			DECIMAL (6, 2) NOT NULL, '
+            'Command_ID					INT NOT NULL, '
+            'Activity_Time					TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+            'CONSTRAINT `fk_condition` '
+            '    FOREIGN KEY (Condition_ID) REFERENCES Air_Condition (Condition_ID) '
+            '    ON DELETE CASCADE '
+            '    ON UPDATE RESTRICT, '
+            'CONSTRAINT `fk_command` '
+            '    FOREIGN KEY (Command_ID) REFERENCES Command (Command_ID) '
+            '    ON DELETE CASCADE '
+            '    ON UPDATE RESTRICT '
+            ');'
+        )
+
+        cursor.execute(create_air_condition_table)
+        cursor.execute(create_command_table)
+        cursor.execute(create_activity_log_table)
+
+        my_db_connection.commit()
+
+    except Exception as e:
+        print(e.args)
+
+    finally:
+        if my_db_connection.is_connected():
+            cursor.close()
+            my_db_connection.close()
+            print("MySQL connection is closed.")
+
+
+def check_tables_existence() -> bool:
+    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+
+    try:
+        cursor = my_db_connection.cursor()
+
+        check_query: str = ("SHOW TABLES;");
+
+        cursor.execute(check_query)
+
+        tables = cursor.fetchall()
+
+        print(tables)
+
+        if tables.__len__() == 3:
+            print("Tables created successfully.")
+            return True
+        else:
+            print("Database creation failed.")
+            return False
+
+    except Exception as e:
+        print(e.args)
+        return False
 
     finally:
         if my_db_connection.is_connected():
@@ -209,6 +285,7 @@ def get_activities() -> [dict]:
                         'JOIN air_condition ON activity_log.Condition_ID = air_condition.Condition_ID '
                         'JOIN command ON command.Command_ID = activity_log.Command_ID ')
         cursor.execute(select_query)
+
         result = cursor.fetchall()
 
         for row in result:
@@ -266,6 +343,15 @@ def add_activity(condition: types_enums.conditions,
                                '(condition_id, temperature, humidity, carbon_dioxide_level, command_id) '
                                'VALUES (%s, %s, %s, %s, %s)')
         params = (condition_id, temperature, humidity, carbon_dioxide_level, command_id)
+
+        cursor.execute(insert_command, params)
+
+        rows_affected = cursor.rowcount
+
+        if rows_affected == 1:
+            return True
+        else:
+            return False
     except Exception as e:
         print(e.args)
     finally:
