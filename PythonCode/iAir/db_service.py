@@ -45,20 +45,24 @@ def setup_database() -> bool:
         cursor.execute(initialization_query)
 
         my_db_connection.commit()
-
+        cursor.
         cursor.execute("SHOW DATABASES")
 
         databases = cursor.fetchall()
 
-        if ('iAir',) in databases:
+        print(databases)
+
+        if 'iAir' in databases:
             print("Database created successfully.")
             return True
         else:
             print("Database creation failed.")
             return False
+
     except Exception as e:
         return False
         print(e.args)
+
     finally:
         if my_db_connection.is_connected():
             cursor.close()
@@ -111,7 +115,7 @@ def get_condition_id(condition: types_enums.conditions) -> int:
 
         params = condition.value
 
-        result = cursor.fetchone()
+        result = cursor.fetchone(query)
 
         if result is None:
             return 0
