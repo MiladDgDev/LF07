@@ -217,7 +217,7 @@ def get_condition_id(condition: types_enums.conditions) -> int:
             print("MySQL connection is closed.")
 
 
-def add_command(command: types_enums.commands) -> bool:
+def add_command(command: types_enums.Commands) -> bool:
     my_db_connection = db_connector.connect(**db_config)
 
     try:
@@ -305,11 +305,11 @@ def get_activities() -> [dict]:
                 types_enums.Activity(
                     activity_id=row[0],
                     air_condition=types_enums.get_condition(row[1]),
-                    temperature=row[3],
-                    humidity=row[4],
-                    carbon_dioxide_level=row[5],
-                    command=types_enums.get_command(row[6]),
-                    activity_time=row[7]
+                    temperature=str(row[2]),
+                    humidity=str(row[3]),
+                    carbon_dioxide_level=str(row[4]),
+                    command=types_enums.get_command(row[5]),
+                    activity_time=row[6].strftime("%Y-%m-%d %H:%M:%S")
                 )
             )
             my_db_connection.close()
@@ -327,7 +327,7 @@ def add_activity(condition: types_enums.conditions,
                  temperature: float,
                  humidity: float,
                  carbon_dioxide_level: float,
-                 command: types_enums.commands) -> bool:
+                 command: types_enums.Commands) -> bool:
     condition_id: int = 0
     command_id = 0
 

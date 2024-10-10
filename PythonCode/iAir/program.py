@@ -7,7 +7,7 @@ success = db_service.add_activity(
     temperature=24.2,
     humidity=45,
     carbon_dioxide_level=500,
-    command=types_enums.commands.CLOSE
+    command=types_enums.Commands.CLOSE
 )
 
 print(f"activity logged: {success}")
