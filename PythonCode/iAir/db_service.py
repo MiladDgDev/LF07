@@ -1,10 +1,20 @@
 import mysql.connector as db_connector
 import types_enums
 
-MY_DB_CONNECTION = db_connector.connect(host='localhost', user='root', database='iair')
+db_server_config = {
+'host': 'localhost',
+'user': 'root'
+}
+
+db_config = {
+'host': 'localhost',
+'user': 'root',
+'database': 'iair'
+}
+
 
 def setup_database():
-    my_db_connection = db_connector.connect(host='localhost', user='root')
+    my_db_connection = db_connector.connect(**db_server_config)
 
     try:
         cursor = my_db_connection.cursor()
@@ -25,7 +35,7 @@ def setup_database():
 
 
 def check_db_existence() -> bool:
-    my_db_connection = db_connector.connect(host='localhost', user='root')
+    my_db_connection = db_connector.connect(**db_server_config)
 
     try:
         cursor = my_db_connection.cursor()
@@ -57,7 +67,7 @@ def check_db_existence() -> bool:
 
 
 def setup_tables():
-    my_db_connection = MY_DB_CONNECTION
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
         cursor = my_db_connection.cursor()
@@ -79,7 +89,7 @@ def setup_tables():
         )
 
         create_activity_log_table: str = (
-            'CREATE TABLE ActivityLog ( '
+            'CREATE TABLE Activity_Log ( '
             'Activity_ID					INT AUTO_INCREMENT PRIMARY KEY, '
             'Condition_ID					INT NOT NULL, '
             'Temperature					DECIMAL (5, 2) NOT NULL, '
@@ -115,7 +125,7 @@ def setup_tables():
 
 
 def check_tables_existence() -> bool:
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
         cursor = my_db_connection.cursor()
@@ -147,7 +157,7 @@ def check_tables_existence() -> bool:
 
 
 def add_condition(condition: types_enums.conditions) -> bool:
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
 
@@ -181,7 +191,7 @@ def add_condition(condition: types_enums.conditions) -> bool:
 
 
 def get_condition_id(condition: types_enums.conditions) -> int:
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
 
@@ -189,9 +199,10 @@ def get_condition_id(condition: types_enums.conditions) -> int:
 
         query: str = 'SELECT Condition_ID FROM air_condition WHERE Enum_Index = %s'
 
-        params = condition.value
+        params = (condition.value,)
+        cursor.execute(query, params)
 
-        result = cursor.fetchone(query)
+        result = cursor.fetchone()
 
         if result is None:
             return 0
@@ -207,7 +218,7 @@ def get_condition_id(condition: types_enums.conditions) -> int:
 
 
 def add_command(command: types_enums.commands) -> bool:
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
 
@@ -241,7 +252,7 @@ def add_command(command: types_enums.commands) -> bool:
 
 
 def get_command_id(condition: types_enums.conditions) -> int:
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
 
@@ -249,8 +260,9 @@ def get_command_id(condition: types_enums.conditions) -> int:
 
         query: str = 'SELECT Command_ID FROM command WHERE Enum_Index = %s'
 
-        params = condition.value
+        params = (condition.value,)
 
+        cursor.execute(query, params)
         result = cursor.fetchone()
 
         if result is None:
@@ -268,7 +280,7 @@ def get_command_id(condition: types_enums.conditions) -> int:
 
 def get_activities() -> [dict]:
     activities: [types_enums.Activity] = []
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
         cursor = my_db_connection.cursor()
@@ -321,19 +333,20 @@ def add_activity(condition: types_enums.conditions,
 
     try:
         queried_condition_id = get_condition_id(condition)
-        if condition_id == 0:
+
+        if queried_condition_id == 0:
             raise Exception("Condition ID not found!")
         condition_id = queried_condition_id
 
         queried_command_id = get_command_id(command)
-        if command_id == 0:
+        if queried_command_id == 0:
             raise Exception("Command ID not found!")
         command_id = queried_command_id
 
     except Exception as e:
         print(e.args)
 
-    my_db_connection = db_connector.connect(host='localhost', user='root', database='iair')
+    my_db_connection = db_connector.connect(**db_config)
 
     try:
 
@@ -349,6 +362,7 @@ def add_activity(condition: types_enums.conditions,
         rows_affected = cursor.rowcount
 
         if rows_affected == 1:
+            my_db_connection.commit()
             return True
         else:
             return False
