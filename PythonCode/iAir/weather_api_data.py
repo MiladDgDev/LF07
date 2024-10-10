@@ -13,6 +13,7 @@ async def get_public_ip() -> str:
     except Exception as e:
         raise e
 
+
 async def get_weather_data(public_ip: str) -> dict:
     api_root = "https://api.weatherapi.com/v1/"
     api_key = "868342ede06a4f5eadd85825240210"
