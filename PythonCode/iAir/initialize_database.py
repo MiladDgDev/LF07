@@ -20,7 +20,7 @@ for condition in types_enums.conditions:
     else:
         print(f'Adding the Condition {condition} failed!')
 
-for command in types_enums.commands:
+for command in types_enums.Commands:
     success = db_service.add_command(command)
     if success is True:
         print(f'Command {command} successfully added to the database')
