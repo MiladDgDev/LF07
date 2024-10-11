@@ -73,12 +73,12 @@ async def update_weather_repository() -> None:
             else:
                 repository.is_day = False
 
-            repository.condition = weather_data['condition']
+            repository.regional_weather_condition = weather_data['condition']
 
             print(f'Weather data successfully updated:\n'
-                  f'regional temperature: {repository.regional_temperature}'
-                  f'regional humidity: {repository.regional_humidity}'
-                  f'regional conditions: {repository.regional_weather_condition}'
+                  f'regional temperature: {repository.regional_temperature}\n'
+                  f'regional humidity: {repository.regional_humidity}\n'
+                  f'regional conditions: {repository.regional_weather_condition}\n'
                   f'Daytime: {repository.is_day}')
 
         except Exception as ex:

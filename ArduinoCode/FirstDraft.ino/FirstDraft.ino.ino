@@ -57,7 +57,7 @@ void setup() {
 
 void loop() {
 
-  if (millis() - getDataTimer >= 15000) {
+  if (millis() - getDataTimer >= 10000) {
     lcd.clear();
 
     float humidity = dht.readHumidity();
@@ -172,14 +172,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
 void WriteMessageToLCD(String message) {
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.autoscroll();
-  int messageLength = message.length();
-
-  for (int i = 0; i< messageLength; i++)
-   {
-    lcd.write(message[i]);
-    delay(50);
-   }
+  lcd.print(message);
 }
 
 void SendSerialMessage(float temperature, float humidity, float co2) {
