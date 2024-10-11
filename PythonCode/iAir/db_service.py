@@ -11,7 +11,7 @@ db_config = {
 'host': 'localhost',
 'user': 'root',
 'password': 'test-123',
-'database': 'iair'
+'database': 'iAir'
 }
 
 
@@ -50,7 +50,7 @@ def check_db_existence() -> bool:
 
         print(databases)
 
-        if ('iair',) in databases:
+        if ('iAir',) in databases:
             print("Database created successfully.")
             return True
         else:
