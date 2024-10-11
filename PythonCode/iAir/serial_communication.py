@@ -1,6 +1,9 @@
+import asyncio
+
 import serial
 import time
 import json
+
 
 async def read_serial_port():
     # Set up the serial connection
@@ -31,3 +34,4 @@ async def read_serial_port():
     # Close the serial connection
     ser.close()
 
+asyncio.run(read_serial_port())
