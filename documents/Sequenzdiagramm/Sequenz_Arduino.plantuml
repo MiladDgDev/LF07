@@ -1,0 +1,30 @@
+@startuml
+participant "Arduino" as Arduino
+participant "DHT-11 (Temp/Humidity Sensor)" as DHT11
+participant "MHZ-19 (CO2 Sensor)" as MHZ19
+participant "LCD Display" as LCD
+
+' Arduino requests temperature and humidity data from the DHT-11 sensor
+activate Arduino
+Arduino -> DHT11: Request temperature, humidity
+activate DHT11
+DHT11 -->> Arduino: Return temperature, humidity
+deactivate DHT11
+
+' Arduino requests CO2 data from the MHZ-19 sensor
+Arduino -> MHZ19: Request CO2 levels
+activate MHZ19
+MHZ19 -->> Arduino: Return CO2 levels
+deactivate MHZ19
+
+' Arduino outputs sensor data to the LCD display
+Arduino ->> LCD: Output sensor data (temp, humidity, CO2)
+deactivate Arduino
+
+' LCD displays the sensor data
+activate LCD
+LCD -> LCD: Display sensor data
+deactivate LCD
+
+
+@enduml
