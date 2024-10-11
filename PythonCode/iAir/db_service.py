@@ -3,12 +3,14 @@ import types_enums
 
 db_server_config = {
 'host': 'localhost',
-'user': 'root'
+'user': 'root',
+'password': 'test-123'
 }
 
 db_config = {
 'host': 'localhost',
 'user': 'root',
+'password': 'test-123',
 'database': 'iair'
 }
 
