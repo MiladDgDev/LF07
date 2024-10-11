@@ -289,7 +289,7 @@ def get_activities() -> [dict]:
 
         select_query = ('SELECT '
                         'Activity_ID, '
-                        'Air_condition.Enum_Index, '
+                        'Air_Condition.Enum_Index, '
                         'Temperature, '
                         'Humidity, '
                         'Carbon_Dioxide_Level, '
@@ -354,7 +354,7 @@ def add_activity(condition: types_enums.conditions,
 
         cursor = my_db_connection.cursor()
 
-        insert_command: str = ('INSERT INTO activity_log '
+        insert_command: str = ('INSERT INTO Activity_Log '
                                '(Condition_ID, Temperature, Humidity, Carbon_Dioxide_Level, Command_ID) '
                                'VALUES (%s, %s, %s, %s, %s)')
         params = (condition_id, temperature, humidity, carbon_dioxide_level, command_id)
