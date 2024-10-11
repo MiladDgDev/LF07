@@ -64,9 +64,14 @@ void loop() {
     float temp = dht.readTemperature();
     float co2 = GetCo2();
 
-    PrintDataToLCD(temp, humidity, co2);
-
     SendSerialMessage(temp, humidity, co2);
+
+    if (Serial.available() > 0) {
+      ReadAndProcessSerialMessage(Serial.readString());
+    } else {
+      PrintDataToLCD(temp, humidity, co2);
+    }
+
 
     getDataTimer = millis();
   }
@@ -103,9 +108,6 @@ float GetCo2() {
   int CO2;
 
   CO2 = myMHZ19.getCO2();  // Request CO2 (as ppm)
-
-  Serial.print("CO2 (ppm): ");
-  Serial.println(CO2);
 
   return CO2;
 }
@@ -175,10 +177,20 @@ void WriteMessageToLCD(String message) {
 
 void SendSerialMessage(float temperature, float humidity, float co2) {
   String temperatureStr = "\"temperature\": " + String(temperature);
-  String humidityStr = "\"humidity\": " + String(temperature);
-  String co2Str = "\"co2\": " + String(temperature);
+  String humidityStr = "\"humidity\": " + String(humidity);
+  String co2Str = "\"co2\": " + String(co2);
 
   String jsonMessage = "{ " + temperatureStr + ", " + humidityStr + ", " + co2Str + " }";
 
   Serial.println(jsonMessage);
+}
+
+void ReadAndProcessSerialMessage(String message) {
+  if (message == "open") {
+    OpenWindow();
+  } else if (message == "close") {
+    CloseWindow();
+  } else {
+    WriteMessageToLCD(message);
+  }
 }
