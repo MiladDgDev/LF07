@@ -68,7 +68,7 @@ void loop() {
 
     SendSerialMessage(temp, humidity, co2);
 
-    WriteMessageToLCD("Hello Marvin Walther");
+    
 
     getDataTimer = millis();
   }
