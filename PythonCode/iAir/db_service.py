@@ -165,7 +165,7 @@ def add_condition(condition: types_enums.conditions) -> bool:
 
         cursor = my_db_connection.cursor()
 
-        insert_command: str = 'INSERT INTO air_condition (condition_name, enum_index) VALUES (%s, %s)'
+        insert_command: str = 'INSERT INTO Air_Condition (condition_name, enum_index) VALUES (%s, %s)'
         params = (condition.name, condition.value)
 
         cursor.execute(insert_command, params)
@@ -199,7 +199,7 @@ def get_condition_id(condition: types_enums.conditions) -> int:
 
         cursor = my_db_connection.cursor()
 
-        query: str = 'SELECT Condition_ID FROM air_condition WHERE Enum_Index = %s'
+        query: str = 'SELECT Condition_ID FROM Air_Condition WHERE Enum_Index = %s'
 
         params = (condition.value,)
         cursor.execute(query, params)
@@ -226,7 +226,7 @@ def add_command(command: types_enums.Commands) -> bool:
 
         cursor = my_db_connection.cursor()
 
-        insert_query: str = 'INSERT INTO command (Command_Name, enum_index) VALUES (%s, %s)'
+        insert_query: str = 'INSERT INTO Command (Command_Name, Enum_Index) VALUES (%s, %s)'
         params = (command.name, command.value)
 
         cursor.execute(insert_query, params)
@@ -260,7 +260,7 @@ def get_command_id(condition: types_enums.conditions) -> int:
 
         cursor = my_db_connection.cursor()
 
-        query: str = 'SELECT Command_ID FROM command WHERE Enum_Index = %s'
+        query: str = 'SELECT Command_ID FROM Command WHERE Enum_Index = %s'
 
         params = (condition.value,)
 
@@ -289,15 +289,15 @@ def get_activities() -> [dict]:
 
         select_query = ('SELECT '
                         'Activity_ID, '
-                        'air_condition.enum_index, '
+                        'Air_condition.Enum_Index, '
                         'Temperature, '
                         'Humidity, '
                         'Carbon_Dioxide_Level, '
-                        'command.enum_index, '
+                        'Command.Enum_Index, '
                         'Activity_Time '
-                        'FROM activity_log '
-                        'JOIN air_condition ON activity_log.Condition_ID = air_condition.Condition_ID '
-                        'JOIN command ON command.Command_ID = activity_log.Command_ID ')
+                        'FROM Activity_Log '
+                        'JOIN Air_Condition ON Activity_Log.Condition_ID = Air_Condition.Condition_ID '
+                        'JOIN Command ON Command.Command_ID = Activity_Log.Command_ID ')
         cursor.execute(select_query)
 
         result = cursor.fetchall()
@@ -355,7 +355,7 @@ def add_activity(condition: types_enums.conditions,
         cursor = my_db_connection.cursor()
 
         insert_command: str = ('INSERT INTO activity_log '
-                               '(condition_id, temperature, humidity, carbon_dioxide_level, command_id) '
+                               '(Condition_ID, Temperature, Humidity, Carbon_Dioxide_Level, Command_ID) '
                                'VALUES (%s, %s, %s, %s, %s)')
         params = (condition_id, temperature, humidity, carbon_dioxide_level, command_id)
 
