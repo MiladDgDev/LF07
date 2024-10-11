@@ -388,6 +388,8 @@ def clear_activity_log():
 
         cursor.execute(delete_query)
 
+        my_db_connection.commit()
+
         rows_affected = cursor.rowcount
 
         if rows_affected > 0:
