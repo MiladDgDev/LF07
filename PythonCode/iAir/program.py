@@ -1,17 +1,30 @@
-import db_service
-import types_enums
+import asyncio
 
 
-success = db_service.add_activity(
-    condition=types_enums.conditions.DESIRABLE,
-    temperature=24.2,
-    humidity=45,
-    carbon_dioxide_level=500,
-    command=types_enums.Commands.CLOSE
-)
+async def weather_background_service(is_canceled: bool):
+    while is_canceled is not True:
+        print("Background service is running...")
+        await asyncio.sleep(5)
 
-print(f"activity logged: {success}")
 
-if success is True:
-    activities = db_service.get_activities()
-    print(f"logged activities: {activities}")
+# Define a main function that does some work in parallel with the background service
+async def main_work():
+    for i in range(10):
+        print(f"Main work iteration {i}")
+        await asyncio.sleep(1)  # Simulate some work with a delay
+
+
+# Set up the event loop
+async def main():
+    is_canceled: bool = False;
+    # Run the background service as a separate asyncio task
+    background_task = asyncio.create_task(weather_background_service(is_canceled));
+
+    # Run other main work concurrently
+    await main_work()
+
+    # Optionally, wait for the background task to finish if needed (here it runs indefinitely)
+    # await background_task
+
+# Start the asyncio event loop
+asyncio.run(main())

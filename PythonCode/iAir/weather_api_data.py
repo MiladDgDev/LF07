@@ -1,6 +1,6 @@
 import asyncio
 import requests
-
+import repository
 
 async def get_public_ip() -> str:
     try:
@@ -52,7 +52,7 @@ async def get_weather_data(public_ip: str) -> dict:
         print(ex.args)
 
 
-async def print_weather() -> None:
+async def update_weather_repository() -> None:
     my_ip: str = ''
 
     try:
@@ -64,8 +64,24 @@ async def print_weather() -> None:
         print(f"My Public IP: {my_ip}")
         try:
             weather_data = await get_weather_data(my_ip)
-            print(weather_data)
+
+            repository.regional_temperature = weather_data['temperature']
+            repository.regional_humidity = weather_data['humidity']
+
+            if weather_data['is_day'] == 1:
+                repository.is_day = True
+            else:
+                repository.is_day = False
+
+            repository.condition = weather_data['condition']
+
+            print(f'Weather data successfully updated:\n'
+                  f'regional temperature: {repository.regional_temperature}'
+                  f'regional humidity: {repository.regional_humidity}'
+                  f'regional conditions: {repository.regional_weather_condition}'
+                  f'Daytime: {repository.is_day}')
+
         except Exception as ex:
             print(ex.args)
 
-asyncio.run( print_weather())
+
