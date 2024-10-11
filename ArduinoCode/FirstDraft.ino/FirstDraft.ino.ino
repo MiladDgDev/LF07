@@ -104,9 +104,6 @@ float GetCo2() {
 
   CO2 = myMHZ19.getCO2();  // Request CO2 (as ppm)
 
-  Serial.print("CO2 (ppm): ");
-  Serial.println(CO2);
-
   return CO2;
 }
 
