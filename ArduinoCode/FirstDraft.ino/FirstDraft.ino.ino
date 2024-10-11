@@ -68,8 +68,6 @@ void loop() {
 
     SendSerialMessage(temp, humidity, co2);
 
-    
-
     getDataTimer = millis();
   }
 }

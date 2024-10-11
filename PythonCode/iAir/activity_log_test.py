@@ -14,4 +14,4 @@ print(f"activity logged: {success}")
 if success is True:
     activities = db_service.get_activities()
     print(f"logged activities: {activities}")
-
+    db_service.clear_activity_log()

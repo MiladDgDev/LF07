@@ -375,3 +375,28 @@ def add_activity(condition: types_enums.conditions,
             cursor.close()
             my_db_connection.close()
             print("MySQL connection is closed.")
+
+
+def clear_activity_log():
+    my_db_connection = db_connector.connect(**db_config)
+
+    try:
+
+        cursor = my_db_connection.cursor()
+
+        delete_query = 'DELETE FROM Activity_Log'
+
+        cursor.execute(delete_query)
+
+        rows_affected = cursor.rowcount
+
+        if rows_affected > 0:
+            print(f"Deleted {rows_affected} rows from activity log.")
+
+    except Exception as e:
+        print(e.args)
+    finally:
+        if my_db_connection.is_connected():
+            cursor.close()
+            my_db_connection.close()
+            print("MySQL connection is closed.")
