@@ -18,11 +18,6 @@ def process_data(data: types_enums.IndoorConditions):
 
         my_co2 = data["co2"]
 
-        window_open_int: int = data["windowsOpen"]
-        window_open: bool = False
-        if window_open_int == 1:
-            window_open = True
-
         if my_temperature <= 14:
             repository.bad_indoor_condition['temperature_too_low'] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE

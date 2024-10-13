@@ -28,7 +28,6 @@ class IndoorConditions(TypedDict):
     temperature: float
     humidity: float
     co2: float
-    windowsOpen: int
 
 
 

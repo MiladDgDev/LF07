@@ -31,7 +31,7 @@ def get_public_ip() -> str:
 
         if response.status_code != 200:
             raise PublicIpNotFound(f"Public IP retrieval failed: code {response.status_code}")
-        
+
         return response.json()['ip']
 
     except PublicIpNotFound as pe:
