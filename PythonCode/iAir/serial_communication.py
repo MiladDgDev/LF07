@@ -29,7 +29,7 @@ def read_serial_port() -> dict:
             print(f"Connected to {ser.port}")
         else:
             raise ArduinoOfflineError("Arduino offline!")
-        
+
         while is_active:
 
             data = ser.readline().decode('utf-8').strip()

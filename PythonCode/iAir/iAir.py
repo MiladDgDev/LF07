@@ -34,7 +34,10 @@ def process_data(data: types_enums.IndoorConditions):
             repository.bad_indoor_condition["co2_too_high"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
 
-        print(repository.bad_indoor_condition)
+        for key in repository.bad_indoor_condition.keys():
+            if repository.bad_indoor_condition[key]:
+                print(f"Issue: {key}")
+            print('\n')
 
     except Exception as e:
         print(e)
@@ -43,11 +46,11 @@ def process_data(data: types_enums.IndoorConditions):
 
 
 def start_activity():
-    print("Activity started!")
+    print("OPEN THE WINDOWS!!!\n")
 
 
 def stop_activity():
-    print("Activity")
+    print("CLOSE THE WINDOWS!!!\n")
 
 
 def main():
@@ -83,9 +86,11 @@ def main():
                     continue
                 else:
                     start_activity()
+
         except KeyboardInterrupt as e:
             is_canceled = True
             print(e)
+
         except serial_communication.ArduinoOfflineError as ae:
             print(ae.message)
             if serial_communication_tries >= 4:
@@ -97,6 +102,7 @@ def main():
             time.sleep(5)
             serial_communication_tries += 1
             continue
+
         except weather_api_data.PublicIpNotFound as pe:
             print(pe.message)
             if public_ip_tries >= 4:
@@ -107,6 +113,7 @@ def main():
             time.sleep(5)
             public_ip_tries += 1
             continue
+
         except weather_api_data.WeatherApiOffline as we:
             print(we.message)
             if weather_api_tries >= 4:
@@ -117,6 +124,7 @@ def main():
             time.sleep(5)
             weather_api_tries += 1
             continue
+            
         except Exception as e:
             print(e)
             is_canceled = True

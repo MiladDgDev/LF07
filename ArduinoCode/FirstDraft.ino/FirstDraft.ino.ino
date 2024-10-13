@@ -47,11 +47,12 @@ void setup() {
   myMHZ19.begin(mySerial);   // *Serial(Stream) refence must be passed to library begin().
   myMHZ19.autoCalibration();
 
+  WriteMessageToLCD("Welcome to iAir!");
 }
 
 void loop() {
 
-  if (millis() - getDataTimer >= 12000) {
+  if (millis() - getDataTimer >= 6000) {
 
     humidity = dht.readHumidity();
     temp = dht.readTemperature();
@@ -82,7 +83,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
   String tempMessage = "Temp.: " + String(temperature) + " C";
   lcd.print(tempMessage);
 
-  delay(2500);
+  delay(1500);
 
   // log humudity
   lcd.clear();
@@ -90,7 +91,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
 
   String humMessage = "Humid.: " + String(humidity) + " %";
   lcd.print(humMessage);
-  delay(2500);
+  delay(1500);
 
   // log co2
   lcd.clear();
@@ -99,7 +100,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
   String co2Message = "CO2: " + String(co2) + " PPM";
   lcd.print(co2Message);
 
-  delay(2500);
+  delay(1500);
 
 }
 
