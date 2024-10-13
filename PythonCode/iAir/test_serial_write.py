@@ -27,6 +27,9 @@ def read_serial_port() -> dict:
             data = ser.readline().decode('utf-8').strip()
             print(f"Received: {data}")
 
+            ser.reset_input_buffer()  # Clears the input buffer
+            ser.reset_output_buffer()  # Clears the output buffer
+            
         except Exception as e:
             print(e.message)
 
