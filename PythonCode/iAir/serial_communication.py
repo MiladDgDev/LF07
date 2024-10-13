@@ -28,7 +28,7 @@ def read_serial_port() -> types_enums.IndoorConditions:
 
     try:
         if ser.is_open:
-            print(f"Connected to Arduino! Waiting for the indoor conditions data!")
+            print(f"Connected to Arduino! Waiting for the indoor conditions data!\n")
         else:
             raise ArduinoOfflineError("Arduino offline!")
 
@@ -38,6 +38,7 @@ def read_serial_port() -> types_enums.IndoorConditions:
 
             if data:
                 data_dict = json.loads(data)
+                print("Indoor conditions:")
                 for key in data_dict.keys():
                     print(f"{key}: {data_dict[key]}")
                 print('\n')

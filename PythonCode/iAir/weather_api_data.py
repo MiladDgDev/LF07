@@ -93,7 +93,7 @@ def update_weather_repository() -> None:
         raise
 
     if my_ip != '':
-        print(f"My Public IP: {my_ip}")
+        print(f"\n\n------------\nMy Public IP: {my_ip}")
         try:
             weather_data = get_weather_data(my_ip)
 
@@ -107,7 +107,7 @@ def update_weather_repository() -> None:
 
             repository.regional_weather_condition = weather_data['condition']
 
-            print(f'Weather data successfully updated:\n'
+            print(f'\nRegional Weather data successfully updated:\n'
                   f'regional temperature: {repository.regional_temperature}\n'
                   f'regional humidity: {repository.regional_humidity}\n'
                   f'regional conditions: {repository.regional_weather_condition}\n'

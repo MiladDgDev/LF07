@@ -34,7 +34,10 @@ def process_data(data: types_enums.IndoorConditions):
             repository.bad_indoor_condition["co2_too_high"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
 
-        print(f"Indoor conditions: {repository.indoor_conditions}")
+        if repository.indoor_conditions == types_enums.Conditions.UNDESIRABLE:
+            print(f"Indoor conditions: Undesirable!\n")
+        else:
+            print(f"Indoor conditions: Desirable!\n")
 
         for key in repository.bad_indoor_condition.keys():
             if repository.bad_indoor_condition[key]:
@@ -54,7 +57,7 @@ def start_activity(indoor_conditions: types_enums.IndoorConditions):
             print("OPEN THE WINDOWS!!!\n\n")
             activity_has_started = True
         else:
-            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+            print("Situation outdoors is worse! Opening the windows won't be helpful!\n"
                   f"Outdoors Temperature: {repository.regional_temperature}")
 
     if repository.bad_indoor_condition['temperature_too_low']:
@@ -62,7 +65,7 @@ def start_activity(indoor_conditions: types_enums.IndoorConditions):
             print("OPEN THE WINDOWS!!!\n\n")
             activity_has_started = True
         else:
-            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+            print("Situation outdoors is worse! Opening the windows won't be helpful!\n"
                   f"Outdoors Temperature: {repository.regional_temperature}")
 
     if repository.bad_indoor_condition['humidity_too_high']:
@@ -70,7 +73,7 @@ def start_activity(indoor_conditions: types_enums.IndoorConditions):
             print("OPEN THE WINDOWS!!!\n\n")
             activity_has_started = True
         else:
-            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+            print("Situation outdoors is worse! Opening the windows won't be helpful!\n"
                   f"Outdoors Humidity: {repository.regional_humidity}")
 
     if repository.bad_indoor_condition['humidity_too_low']:
@@ -78,7 +81,7 @@ def start_activity(indoor_conditions: types_enums.IndoorConditions):
             print("OPEN THE WINDOWS!!!\n\n")
             activity_has_started = True
         else:
-            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+            print("Situation outdoors is worse! Opening the windows won't be helpful!\n"
                   f"Outdoors Humidity: {repository.regional_humidity}")
 
     if repository.bad_indoor_condition['co2_too_high']:
