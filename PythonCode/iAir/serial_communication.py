@@ -25,9 +25,12 @@ def read_serial_port() -> dict:
     )
 
     try:
+        if ser.is_open:
+            print(f"Connected to {ser.port}")
+        else:
+            raise ArduinoOfflineError("Arduino offline!")
+        
         while is_active:
-            if ser.is_open:
-                print(f"Connected to {ser.port}")
 
             data = ser.readline().decode('utf-8').strip()
 
@@ -36,8 +39,6 @@ def read_serial_port() -> dict:
                 data_dict = json.loads(data)
                 print(data_dict)
                 return data_dict
-
-            raise ArduinoOfflineError(message="Extracting data from the Arduino failed!")
 
     except KeyboardInterrupt:
         print("Exiting program...")
@@ -48,6 +49,7 @@ def read_serial_port() -> dict:
         print(e.message)
         is_active = False
         raise
+
     finally:
         ser.close()
 
