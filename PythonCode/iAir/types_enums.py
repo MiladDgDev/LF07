@@ -24,6 +24,12 @@ class Activity(TypedDict):
     activity_time: str
 
 
+class IndoorConditions(TypedDict):
+    temperature: float
+    humidity: float
+    co2: float
+
+
 def get_condition(index: int):
     if index < 1 or index > len(conditions):
         return list(conditions)[1].name

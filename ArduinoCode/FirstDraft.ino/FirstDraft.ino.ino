@@ -18,9 +18,8 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 // Servo Motor
 Servo myservo;  // create servo object to control a servo
-
-int servo_pin = 0;  // analog pin used to connect the potentiometer
 int servo_value;
+bool windowIsOpen = false;
 
 // CO2 Sensor
 #define RX_PIN 2       // Rx pin which the MHZ19 Tx pin is attached to
@@ -30,7 +29,15 @@ int servo_value;
 MHZ19 myMHZ19;                            // Constructor for library
 SoftwareSerial mySerial(RX_PIN, TX_PIN);  // (Uno example) create device to MH-Z19 serial
 
+// RED LED
+int redPin = 12;
+
+// GREEN LED
+int greenPin = 11;
+
 unsigned long getDataTimer = 0;
+
+bool alert = false;
 
 void setup() {
 
@@ -53,11 +60,17 @@ void setup() {
   mySerial.begin(BAUDRATE);  // (Uno example) device to MH-Z19 serial start
   myMHZ19.begin(mySerial);   // *Serial(Stream) refence must be passed to library begin().
   myMHZ19.autoCalibration();
+
+  // Start LEDs
+  pinMode(redPin, OUTPUT);
+  HandleGreenLED(true);
+
+  pinMode(greenPin, OUTPUT);
+  HandleRedLED(false);
 }
 
 void loop() {
-
-  if (millis() - getDataTimer >= 10000) {
+  if (millis() - getDataTimer >= 15000) {
     lcd.clear();
 
     float humidity = dht.readHumidity();
@@ -72,6 +85,13 @@ void loop() {
       PrintDataToLCD(temp, humidity, co2);
     }
 
+    if (alert) {
+      HandleRedLED(true);
+      HandleGreenLED(false);
+    } else {
+      HandleRedLED(false);
+      HandleGreenLED(true);
+    }
 
     getDataTimer = millis();
   }
@@ -81,12 +101,12 @@ void OpenWindow() {
   int currentAngle = myservo.read();
 
   if (currentAngle < 90) {
-    for (int pos = 0; pos <= 90; pos += 1) {
+    for (int pos = 0; pos <= 90; pos++) {
       myservo.write(pos);
       delay(15);
     }
   } else {
-    for (int pos = currentAngle; pos >= 90; pos -= 1) {
+    for (int pos = currentAngle; pos >= 0; pos--) {
       myservo.write(pos);
       delay(15);
     }
@@ -170,9 +190,22 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
 }
 
 void WriteMessageToLCD(String message) {
+  int messageLength = message.length();
+
   lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print(message);
+
+  if (messageLength <= 16) {
+    lcd.setCursor(0, 0);
+    lcd.print(message);
+  } else {
+    lcd.setCursor(3, 0);
+    lcd.print(message);
+
+    for (int i = (messageLength - 13); i >= 0; i--) {
+      lcd.scrollDisplayLeft();
+      delay(750);
+    }
+  }
 }
 
 void SendSerialMessage(float temperature, float humidity, float co2) {
@@ -185,12 +218,33 @@ void SendSerialMessage(float temperature, float humidity, float co2) {
   Serial.println(jsonMessage);
 }
 
-void ReadAndProcessSerialMessage(String message) {
-  if (message == "open") {
-    OpenWindow();
-  } else if (message == "close") {
-    CloseWindow();
+void HandleRedLED(bool on) {
+  if (on) {
+    digitalWrite(redPin, HIGH);
   } else {
+    digitalWrite(redPin, LOW);
+  }
+}
+
+void HandleGreenLED(bool on) {
+  if (on) {
+    digitalWrite(greenPin, HIGH);
+  } else {
+    digitalWrite(greenPin, LOW);
+  }
+}
+
+void ReadAndProcessSerialMessage(String message) {
+  if (message.toLowerCase() == "open") {
+    OpenWindow();
+  } else if (message.toLowerCase() == "close") {
+    CloseWindow();
+  } else if (message.toLowerCase() == "alert"){
+    alert = true;
+  } else if (message.toLowerCase() == " no alert") {
+    alert = false;
+  }
+  else {
     WriteMessageToLCD(message);
   }
 }

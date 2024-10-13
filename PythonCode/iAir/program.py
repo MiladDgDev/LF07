@@ -1,5 +1,5 @@
 import asyncio
-
+import types_enums
 
 async def weather_background_service(is_canceled: bool):
     while is_canceled is not True:
@@ -12,6 +12,13 @@ async def main_work():
     for i in range(10):
         print(f"Main work iteration {i}")
         await asyncio.sleep(1)  # Simulate some work with a delay
+
+
+async def process_data(data: types_enums.IndoorConditions) -> str:
+    my_temperature = data["temperature"]
+    my_humidity = data["humidity"]
+    my_co2 = data["co2"]
+
 
 
 # Set up the event loop
