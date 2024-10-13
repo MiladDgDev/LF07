@@ -68,9 +68,15 @@ void setup() {
 
   pinMode(greenPin, OUTPUT);
   HandleRedLED(false);
+  WriteMessageToLCD("Hello! Getting Started!");
 }
 
 void loop() {
+  if (Serial.available() > 0) {
+    String message = Serial.readStringUntil('\n');
+    ReadAndProcessSerialMessage(message);
+  }
+
   if (millis() - getDataTimer >= 15000) {
     lcd.clear();
 
@@ -80,13 +86,13 @@ void loop() {
 
     SendSerialMessage(temp, humidity, co2, windowIsOpen);
 
-    if (Serial.available() > 0) {
-      String message = Serial.readString();
-      Serial.println(message);
-      ReadAndProcessSerialMessage(message);
-    } else {
-      PrintDataToLCD(temp, humidity, co2);
-    }
+    // if (Serial.available() > 0) {
+    //   String message = Serial.readString();
+    //   WriteMessageToLCD(message);
+    //   ReadAndProcessSerialMessage(message);
+    // } else {
+    PrintDataToLCD(temp, humidity, co2);
+    // }
 
     if (alert) {
       HandleRedLED(true);
@@ -189,7 +195,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
 
   delay(2500);
 
-    // log window status
+  // log window status
   lcd.clear();
   lcd.setCursor(0, 0);
 
@@ -197,11 +203,10 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
 
   if (windowIsOpen) {
     windowStatus = "OPEN";
-  }
-  else {
+  } else {
     windowStatus = "CLOSED";
   }
-  
+
   String windowMessage = "Windows: " + windowStatus;
   int windowMessageLength = windowMessage.length();
 
@@ -271,12 +276,11 @@ void ReadAndProcessSerialMessage(String message) {
     OpenWindow();
   } else if (message == "close") {
     CloseWindow();
-  } else if (message == "alert"){
+  } else if (message == "alert") {
     alert = true;
   } else if (message == "no alert") {
     alert = false;
-  }
-  else {
+  } else {
     WriteMessageToLCD(copiedMessage);
   }
 }
