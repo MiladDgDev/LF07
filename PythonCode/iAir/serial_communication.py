@@ -1,3 +1,5 @@
+import time
+
 import serial
 import json
 
@@ -22,21 +24,28 @@ def read_serial_port() -> dict:
         baudrate=115200,
         timeout=1
     )
+    time.sleep(2)
 
     if ser.is_open:
         print(f"Connected to {ser.port}")
 
     while is_active:
         try:
+            ser.reset_input_buffer()  # Clears the input buffer
+            ser.reset_output_buffer()  # Clears the output buffer
+
             ser.write(b'DATA')
 
-            data = ser.readline().decode('utf-8').strip()
+            while ser.in_waiting > 0:
 
-            if data:
+                data = ser.readline().decode('utf-8').strip()
                 print(f"Received: {data}")
-                data_dict = json.loads(data)
-                print(data_dict)
-                return data_dict
+
+                if data:
+                    print(f"Received: {data}")
+                    data_dict = json.loads(data)
+                    print(data_dict)
+                    return data_dict
 
             raise ArduinoOfflineError(message="Extracting data from the Arduino failed!")
 
