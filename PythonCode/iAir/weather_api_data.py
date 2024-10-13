@@ -17,7 +17,7 @@ class WeatherApiOffline(Exception):
 class PublicIpNotFound(Exception):
     """Exception raised for Public IP Retrieval Failure."""
 
-    def __init__(self, message="The Public IP could not be retrieved. Trying Again!"):
+    def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
@@ -30,10 +30,9 @@ def get_public_ip() -> str:
         response = requests.get('https://api.ipify.org/?format=json')
 
         if response.status_code != 200:
-            raise Exception('IP Address Retrieval Failed!')
-            return response.json()['ip']
-
-        raise PublicIpNotFound()
+            raise PublicIpNotFound(f"Public IP retrieval failed: code {response.status_code}")
+        
+        return response.json()['ip']
 
     except PublicIpNotFound as pe:
         print(pe.message)

@@ -62,7 +62,7 @@ def main():
     weather_api_tries: int = 0
     serial_communication_tries: int = 0
 
-    while is_canceled is False:
+    while not is_canceled:
         try:
             # get outdoors weather data from the weather api
             weather_api_data.update_weather_repository()
@@ -103,7 +103,7 @@ def main():
             continue
         except weather_api_data.PublicIpNotFound as pe:
             print(pe.message)
-            if weather_api_tries >= 4:
+            if public_ip_tries >= 4:
                 print("Public IP retrieval failed after 5 attempts. Shutting program down. Please try again later.")
                 is_canceled = True
             print("Trying again in 5 seconds!")
