@@ -12,4 +12,4 @@ def serial_write():
         print(e)
 
 
-serial_write()
+serial_communication.read_serial_port();

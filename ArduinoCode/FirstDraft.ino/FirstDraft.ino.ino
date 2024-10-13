@@ -5,6 +5,7 @@
 #include "MHZ19.h"
 #include <SoftwareSerial.h>
 
+
 // DHT Sensor
 #define DHTPIN 13
 
@@ -77,18 +78,26 @@ void setup() {
 }
 
 void loop() {
-  Serial.read();
+  isReading = false;
 
-  if (alert) {
-    HandleRedLED(true);
-    HandleGreenLED(false);
-  } else {
-    HandleRedLED(false);
-    HandleGreenLED(true);
+  if (Serial.available() > 0) {
+    isReading = true;
+    String message = Serial.readStringUntil('\n');
+    WriteMessageToLCD(message);
+    // ReadAndProcessSerialMessage(message);
+    if (alert) {
+      HandleRedLED(true);
+      HandleGreenLED(false);
+    } else {
+      HandleRedLED(false);
+      HandleGreenLED(true);
+    }
+    delay(2000);
+    Serial.read();
+    return;
   }
 
-  if (millis() - getDataTimer >= 15000 && isReading != true) {
-    lcd.clear();
+  if (millis() - getDataTimer >= 12000 && isReading != true) {
 
     humidity = dht.readHumidity();
     temp = dht.readTemperature();
@@ -97,14 +106,6 @@ void loop() {
     PrintDataToLCD(temp, humidity, co2);
 
     getDataTimer = millis();
-  }
-
-  if (Serial.available() > 0) {
-    isReading = true;
-    String message = Serial.readStringUntil('\n');
-    WriteMessageToLCD(message);
-    // ReadAndProcessSerialMessage(message);
-    isReading = false;
   }
 }
 
@@ -149,57 +150,30 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
   lcd.setCursor(0, 0);
 
   String tempMessage = "Temp.: " + String(temperature) + " C";
-  int messageLength = tempMessage.length();
-
-  char chars[messageLength];
-
-  tempMessage.toCharArray(chars, messageLength + 1);
-
-  for (int i = 0; i < tempMessage.length(); i++) {
-    lcd.write(chars[i]);
-    delay(50);
-  }
+  lcd.print(tempMessage);
 
   delay(2500);
 
   // log humudity
   lcd.clear();
-  lcd.setCursor(0, 0);
+  lcd.home();
 
   String humMessage = "Humid.: " + String(humidity) + " %";
-  int humMessageLength = humMessage.length();
-
-  char humChars[humMessageLength];
-
-  humMessage.toCharArray(humChars, humMessageLength + 1);
-
-  for (int i = 0; i < humMessageLength; i++) {
-    lcd.write(humChars[i]);
-    delay(50);
-  }
+  lcd.print(humMessage);
   delay(2500);
 
   // log co2
   lcd.clear();
-  lcd.setCursor(0, 0);
+  lcd.home();
 
   String co2Message = "CO2: " + String(co2) + " PPM";
-  int co2MessageLength = co2Message.length();
-
-  char cChars[co2MessageLength];
-
-  co2Message.toCharArray(cChars, co2MessageLength + 1);
-
-  for (int i = 0; i < co2MessageLength; i++) {
-    lcd.write(cChars[i]);
-    delay(50);
-  }
+  lcd.print(co2Message);
 
   delay(2500);
 
   // log window status
   lcd.clear();
-  lcd.setCursor(0, 0);
+  lcd.home();
 
   String windowStatus = "";
 
@@ -210,16 +184,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
   }
 
   String windowMessage = "Windows: " + windowStatus;
-  int windowMessageLength = windowMessage.length();
-
-  char wChars[windowMessageLength];
-
-  windowMessage.toCharArray(wChars, windowMessageLength + 1);
-
-  for (int i = 0; i < windowMessageLength; i++) {
-    lcd.write(wChars[i]);
-    delay(50);
-  }
+  lcd.print(windowMessage);
 
   delay(2500);
 }
@@ -244,6 +209,7 @@ void WriteMessageToLCD(String message) {
 }
 
 void SendSerialMessage(float temperature, float humidity, float co2, bool windowsOpen) {
+
   String temperatureStr = "\"temperature\": " + String(temperature);
   String humidityStr = "\"humidity\": " + String(humidity);
   String co2Str = "\"co2\": " + String(co2);
@@ -284,4 +250,6 @@ void ReadAndProcessSerialMessage(String message) {
   } else {
     WriteMessageToLCD(message);
   }
+
+  lcd.clear();
 }
