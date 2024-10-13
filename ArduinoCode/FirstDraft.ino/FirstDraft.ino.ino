@@ -40,6 +40,8 @@ unsigned long getDataTimer = 0;
 
 bool alert = false;
 
+bool isReading = false;
+
 void setup() {
 
   Serial.begin(9600);  // Device to serial monitor feedback
@@ -73,37 +75,39 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
+    isReading = true;
     String message = Serial.readStringUntil('\n');
     ReadAndProcessSerialMessage(message);
+    isReading = false;
   }
 
-  if (millis() - getDataTimer >= 15000) {
-    lcd.clear();
+  // if (millis() - getDataTimer >= 15000 && isReading != true) {
+  //   lcd.clear();
 
-    float humidity = dht.readHumidity();
-    float temp = dht.readTemperature();
-    float co2 = GetCo2();
+  //   float humidity = dht.readHumidity();
+  //   float temp = dht.readTemperature();
+  //   float co2 = GetCo2();
 
-    SendSerialMessage(temp, humidity, co2, windowIsOpen);
+  //   SendSerialMessage(temp, humidity, co2, windowIsOpen);
 
-    // if (Serial.available() > 0) {
-    //   String message = Serial.readString();
-    //   WriteMessageToLCD(message);
-    //   ReadAndProcessSerialMessage(message);
-    // } else {
-    PrintDataToLCD(temp, humidity, co2);
-    // }
+  //   // if (Serial.available() > 0) {
+  //   //   String message = Serial.readString();
+  //   //   WriteMessageToLCD(message);
+  //   //   ReadAndProcessSerialMessage(message);
+  //   // } else {
+  //   PrintDataToLCD(temp, humidity, co2);
+  //   // }
 
-    if (alert) {
-      HandleRedLED(true);
-      HandleGreenLED(false);
-    } else {
-      HandleRedLED(false);
-      HandleGreenLED(true);
-    }
+  //   if (alert) {
+  //     HandleRedLED(true);
+  //     HandleGreenLED(false);
+  //   } else {
+  //     HandleRedLED(false);
+  //     HandleGreenLED(true);
+  //   }
 
-    getDataTimer = millis();
-  }
+  //   getDataTimer = millis();
+  // }
 }
 
 void OpenWindow() {
@@ -269,18 +273,34 @@ void HandleGreenLED(bool on) {
 }
 
 void ReadAndProcessSerialMessage(String message) {
-  String copiedMessage = message;
 
-  message.toLowerCase();
-  if (message == "open") {
+  if (message == "OPEN") {
     OpenWindow();
-  } else if (message == "close") {
+  } else if (message == "CLOSE") {
     CloseWindow();
-  } else if (message == "alert") {
-    alert = true;
-  } else if (message == "no alert") {
     alert = false;
-  } else {
-    WriteMessageToLCD(copiedMessage);
+  } else if (message == "ALERT") {
+    alert = true;
+  } else if (message == "DATA") {
+     lcd.clear();
+
+    float humidity = dht.readHumidity();
+    float temp = dht.readTemperature();
+    float co2 = GetCo2();
+
+    SendSerialMessage(temp, humidity, co2, windowIsOpen);
+
+    PrintDataToLCD(temp, humidity, co2);
+
+    if (alert) {
+      HandleRedLED(true);
+      HandleGreenLED(false);
+    } else {
+      HandleRedLED(false);
+      HandleGreenLED(true);
+    }
+  }
+   else {
+    WriteMessageToLCD(message);
   }
 }

@@ -28,6 +28,8 @@ def read_serial_port() -> dict:
 
     while is_active:
         try:
+            ser.write(b'DATA')
+
             data = ser.readline().decode('utf-8').strip()
 
             if data:
