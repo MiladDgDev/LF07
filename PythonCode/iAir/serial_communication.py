@@ -63,7 +63,7 @@ def write_to_serial_port(message: str) -> bool:
     try:
         if ser.is_open:
             print(f"Connected to {ser.port}")
-            ser.write(message)
+            ser.write(message.encode())
             ser.close()
             return True
         else:
