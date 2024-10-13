@@ -23,9 +23,9 @@ def read_serial_port() -> dict:
 
             ser.write(b'DATA')
             time.sleep(1)
-            while ser.in_waiting > 0:
-                data = ser.readline().decode('utf-8').strip()
-                print(f"Received: {data}")
+
+            data = ser.readline().decode('utf-8').strip()
+            print(f"Received: {data}")
 
         except Exception as e:
             print(e.message)
