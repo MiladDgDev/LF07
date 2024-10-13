@@ -1,37 +1,80 @@
-import asyncio
-
 import serial
-import time
 import json
 
 
-async def read_serial_port():
-    # Set up the serial connection
+class ArduinoOfflineError(Exception):
+    """Exception raised forArduino being offline."""
+
+    def __init__(self,  message):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+
+def read_serial_port() -> dict:
+
+    is_active: bool = True
+
     ser = serial.Serial(
-        port='/dev/ttyACM0',        # Replace with your serial port name (e.g., '/dev/ttyUSB0' on Linux)
-        baudrate=9600,      # Set the baud rate according to your device's specifications
-        timeout=1           # Timeout in seconds for read operations
+        port='/dev/ttyACM0',
+        baudrate=9600,
+        timeout=1
     )
 
-    # Check if the serial port is open
     if ser.is_open:
         print(f"Connected to {ser.port}")
 
-    # Read data from the serial port
-    try:
-        while True:
-            # Read a line (until a newline character) from the serial port
+    while is_active:
+        try:
             data = ser.readline().decode('utf-8').strip()
 
             if data:
                 print(f"Received: {data}")
                 data_dict = json.loads(data)
                 print(data_dict)
+                return data_dict
 
-    except KeyboardInterrupt:
-        print("Exiting program...")
+            raise ArduinoOfflineError(message="Extracting data from the Arduino failed!")
 
-    # Close the serial connection
-    ser.close()
+        except KeyboardInterrupt:
+            print("Exiting program...")
+            is_active = False
+            raise
+        except ArduinoOfflineError as e:
+            print(e.message)
+            is_active = False
+            raise
+        finally:
+            ser.close()
 
-asyncio.run(read_serial_port())
+
+def write_to_serial_port(message: str) -> bool:
+
+    is_active: bool = True
+
+    ser = serial.Serial(
+        port='/dev/ttyACM0',
+        baudrate=9600,
+        timeout=1
+    )
+
+    try:
+        if ser.is_open:
+            print(f"Connected to {ser.port}")
+            ser.write(message.encode('utf'))
+            ser.close()
+            return True
+        else:
+            raise ArduinoOfflineError("Message didn't reach the Arduino!")
+    except ArduinoOfflineError as e:
+        print(e.message)
+        raise
+    except serial.SerialException as e:
+        print(e.message)
+        raise
+    except Exception as e:
+        print(e)
+        raise
+

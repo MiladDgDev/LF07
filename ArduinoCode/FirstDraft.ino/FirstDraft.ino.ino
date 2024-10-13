@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "MHZ19.h"
 #include <SoftwareSerial.h>
+#include <string.h>
 
 // DHT Sensor
 #define DHTPIN 13
@@ -77,7 +78,7 @@ void loop() {
     float temp = dht.readTemperature();
     float co2 = GetCo2();
 
-    SendSerialMessage(temp, humidity, co2);
+    SendSerialMessage(temp, humidity, co2, windowIsOpen);
 
     if (Serial.available() > 0) {
       ReadAndProcessSerialMessage(Serial.readString());
@@ -133,8 +134,6 @@ float GetCo2() {
 }
 
 void PrintDataToLCD(float temperature, float humidity, float co2) {
-  lcd.noAutoscroll();
-
   // log temperature
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -151,7 +150,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
     delay(50);
   }
 
-  delay(3000);
+  delay(2500);
 
   // log humudity
   lcd.clear();
@@ -168,7 +167,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
     lcd.write(humChars[i]);
     delay(50);
   }
-  delay(3000);
+  delay(2500);
 
   // log co2
   lcd.clear();
@@ -186,7 +185,34 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
     delay(50);
   }
 
-  delay(3000);
+  delay(2500);
+
+    // log window status
+  lcd.clear();
+  lcd.setCursor(0, 0);
+
+  String windowStatus = "";
+
+  if (windowIsOpen) {
+    windowStatus = "OPEN";
+  }
+  else {
+    windowStatus = "CLOSED";
+  }
+  
+  String windowMessage = "Windows: " + windowStatus;
+  int windowMessageLength = windowMessage.length();
+
+  char wChars[windowMessageLength];
+
+  windowMessage.toCharArray(wChars, windowMessageLength + 1);
+
+  for (int i = 0; i < windowMessageLength; i++) {
+    lcd.write(wChars[i]);
+    delay(50);
+  }
+
+  delay(2500);
 }
 
 void WriteMessageToLCD(String message) {
@@ -208,12 +234,13 @@ void WriteMessageToLCD(String message) {
   }
 }
 
-void SendSerialMessage(float temperature, float humidity, float co2) {
+void SendSerialMessage(float temperature, float humidity, float co2, bool windowsOpen) {
   String temperatureStr = "\"temperature\": " + String(temperature);
   String humidityStr = "\"humidity\": " + String(humidity);
   String co2Str = "\"co2\": " + String(co2);
+  String windowsStr = "\"windowsOpen\": " + String(windowsOpen);
 
-  String jsonMessage = "{ " + temperatureStr + ", " + humidityStr + ", " + co2Str + " }";
+  String jsonMessage = "{ " + temperatureStr + ", " + humidityStr + ", " + co2Str + ", " + windowsStr + " }";
 
   Serial.println(jsonMessage);
 }
@@ -235,16 +262,20 @@ void HandleGreenLED(bool on) {
 }
 
 void ReadAndProcessSerialMessage(String message) {
-  if (message.toLowerCase() == "open") {
+  String copiedMessage = message;
+
+  message.toLowerCase();
+
+  if (message == "open") {
     OpenWindow();
-  } else if (message.toLowerCase() == "close") {
+  } else if (message == "close") {
     CloseWindow();
-  } else if (message.toLowerCase() == "alert"){
+  } else if (message == "alert"){
     alert = true;
-  } else if (message.toLowerCase() == " no alert") {
+  } else if (message == "no alert") {
     alert = false;
   }
   else {
-    WriteMessageToLCD(message);
+    WriteMessageToLCD(copiedMessage);
   }
 }

@@ -13,7 +13,7 @@ if database_initialization_successful:
     print(f'tables are set: {tables_are_set}')
 
 
-for condition in types_enums.conditions:
+for condition in types_enums.Conditions:
     success = db_service.add_condition(condition)
     if success is True:
         print(f'Condition {condition} successfully added to the database')
