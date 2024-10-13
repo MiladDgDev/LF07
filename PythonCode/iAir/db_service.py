@@ -158,7 +158,7 @@ def check_tables_existence() -> bool:
             print("MySQL connection is closed.")
 
 
-def add_condition(condition: types_enums.conditions) -> bool:
+def add_condition(condition: types_enums.Conditions) -> bool:
     my_db_connection = db_connector.connect(**db_config)
 
     try:
@@ -192,7 +192,7 @@ def add_condition(condition: types_enums.conditions) -> bool:
             print("MySQL connection is closed.")
 
 
-def get_condition_id(condition: types_enums.conditions) -> int:
+def get_condition_id(condition: types_enums.Conditions) -> int:
     my_db_connection = db_connector.connect(**db_config)
 
     try:
@@ -253,7 +253,7 @@ def add_command(command: types_enums.Commands) -> bool:
             print("MySQL connection is closed.")
 
 
-def get_command_id(condition: types_enums.conditions) -> int:
+def get_command_id(condition: types_enums.Conditions) -> int:
     my_db_connection = db_connector.connect(**db_config)
 
     try:
@@ -325,7 +325,7 @@ def get_activities() -> [dict]:
             print("MySQL connection is closed.")
 
 
-def add_activity(condition: types_enums.conditions,
+def add_activity(condition: types_enums.Conditions,
                  temperature: float,
                  humidity: float,
                  carbon_dioxide_level: float,

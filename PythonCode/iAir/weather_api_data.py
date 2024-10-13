@@ -2,19 +2,47 @@ import asyncio
 import requests
 import repository
 
-async def get_public_ip() -> str:
+
+class WeatherApiOffline(Exception):
+    """Exception raised for Weather API being offline."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+
+class PublicIpNotFound(Exception):
+    """Exception raised for Public IP Retrieval Failure."""
+
+    def __init__(self, message="The Public IP could not be retrieved. Trying Again!"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+
+def get_public_ip() -> str:
     try:
         response = requests.get('https://api.ipify.org/?format=json')
 
         if response.status_code != 200:
             raise Exception('IP Address Retrieval Failed!')
+            return response.json()['ip']
 
-        return response.json()['ip']
-    except Exception as e:
-        raise e
+        raise PublicIpNotFound()
+
+    except PublicIpNotFound as pe:
+        print(pe.message)
+        raise
+    except Exception:
+        raise
 
 
-async def get_weather_data(public_ip: str) -> dict:
+def get_weather_data(public_ip: str) -> dict:
     api_root = "https://api.weatherapi.com/v1/"
     api_key = "868342ede06a4f5eadd85825240210"
 
@@ -28,10 +56,10 @@ async def get_weather_data(public_ip: str) -> dict:
             http_response_code = response.status_code
             error_code = data['code']
             message = data['message']
-            raise Exception(f'Weather Data Retrieval Failed! '
-                            f'\nHTTP Response Code: {http_response_code}'
-                            f'\nError Code: {error_code}'
-                            f'\nMessage: {message}')
+            raise WeatherApiOffline(message=f'Weather Data Retrieval Failed! '
+                                            f'\nHTTP Response Code: {http_response_code}'
+                                            f'\nError Code: {error_code}'
+                                            f'\nMessage: {message}')
 
         current_fetched_values = data['current']
         temperature = current_fetched_values['temp_c']
@@ -48,22 +76,27 @@ async def get_weather_data(public_ip: str) -> dict:
 
         return current_condition
 
+    except WeatherApiOffline as we:
+        print(we.message)
+        raise
     except Exception as ex:
         print(ex.args)
+        raise
 
 
-async def update_weather_repository() -> None:
+def update_weather_repository() -> None:
     my_ip: str = ''
 
     try:
-        my_ip = await get_public_ip()
+        my_ip = get_public_ip()
     except Exception as e:
         print(e.args)
+        raise
 
     if my_ip != '':
         print(f"My Public IP: {my_ip}")
         try:
-            weather_data = await get_weather_data(my_ip)
+            weather_data = get_weather_data(my_ip)
 
             repository.regional_temperature = weather_data['temperature']
             repository.regional_humidity = weather_data['humidity']
@@ -83,5 +116,4 @@ async def update_weather_repository() -> None:
 
         except Exception as ex:
             print(ex.args)
-
-
+            raise

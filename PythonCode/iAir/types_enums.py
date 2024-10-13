@@ -3,7 +3,7 @@ from enum import Enum
 from typing import TypedDict
 
 
-class conditions(Enum):
+class Conditions(Enum):
     DESIRABLE = 1
     UNDESIRABLE = 2
 
@@ -16,7 +16,7 @@ class Commands(Enum):
 
 class Activity(TypedDict):
     activity_id: int
-    air_condition: conditions
+    air_condition: Conditions
     temperature: str
     humidity: str
     carbon_dioxide_level: str
@@ -28,13 +28,23 @@ class IndoorConditions(TypedDict):
     temperature: float
     humidity: float
     co2: float
+    windowsOpen: int
+
+
+
+class BadIndoorCondition(TypedDict):
+    temperature_too_high: bool
+    temperature_too_low: bool
+    humidity_too_high: bool
+    humidity_too_low: bool
+    co2_too_high: bool
 
 
 def get_condition(index: int):
-    if index < 1 or index > len(conditions):
-        return list(conditions)[1].name
+    if index < 1 or index > len(Conditions):
+        return list(Conditions)[1].name
     else:
-        return list(conditions)[index].name
+        return list(Conditions)[index].name
 
 
 def get_command(index: int):

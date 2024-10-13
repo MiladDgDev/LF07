@@ -2,7 +2,7 @@ import db_service
 import types_enums
 
 success = db_service.add_activity(
-    condition=types_enums.conditions.DESIRABLE,
+    condition=types_enums.Conditions.DESIRABLE,
     temperature=24.2,
     humidity=45,
     carbon_dioxide_level=500,

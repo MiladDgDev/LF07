@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "MHZ19.h"
 #include <SoftwareSerial.h>
+#include <string.h>
 
 // DHT Sensor
 #define DHTPIN 13
@@ -39,6 +40,8 @@ unsigned long getDataTimer = 0;
 
 bool alert = false;
 
+bool isReading = false;
+
 void setup() {
 
   Serial.begin(9600);  // Device to serial monitor feedback
@@ -67,34 +70,44 @@ void setup() {
 
   pinMode(greenPin, OUTPUT);
   HandleRedLED(false);
+  WriteMessageToLCD("Hello! Getting Started!");
 }
 
 void loop() {
-  if (millis() - getDataTimer >= 15000) {
-    lcd.clear();
-
-    float humidity = dht.readHumidity();
-    float temp = dht.readTemperature();
-    float co2 = GetCo2();
-
-    SendSerialMessage(temp, humidity, co2);
-
-    if (Serial.available() > 0) {
-      ReadAndProcessSerialMessage(Serial.readString());
-    } else {
-      PrintDataToLCD(temp, humidity, co2);
-    }
-
-    if (alert) {
-      HandleRedLED(true);
-      HandleGreenLED(false);
-    } else {
-      HandleRedLED(false);
-      HandleGreenLED(true);
-    }
-
-    getDataTimer = millis();
+  if (Serial.available() > 0) {
+    isReading = true;
+    String message = Serial.readStringUntil('\n');
+    ReadAndProcessSerialMessage(message);
+    isReading = false;
   }
+
+  // if (millis() - getDataTimer >= 15000 && isReading != true) {
+  //   lcd.clear();
+
+  //   float humidity = dht.readHumidity();
+  //   float temp = dht.readTemperature();
+  //   float co2 = GetCo2();
+
+  //   SendSerialMessage(temp, humidity, co2, windowIsOpen);
+
+  //   // if (Serial.available() > 0) {
+  //   //   String message = Serial.readString();
+  //   //   WriteMessageToLCD(message);
+  //   //   ReadAndProcessSerialMessage(message);
+  //   // } else {
+  //   PrintDataToLCD(temp, humidity, co2);
+  //   // }
+
+  //   if (alert) {
+  //     HandleRedLED(true);
+  //     HandleGreenLED(false);
+  //   } else {
+  //     HandleRedLED(false);
+  //     HandleGreenLED(true);
+  //   }
+
+  //   getDataTimer = millis();
+  // }
 }
 
 void OpenWindow() {
@@ -133,8 +146,6 @@ float GetCo2() {
 }
 
 void PrintDataToLCD(float temperature, float humidity, float co2) {
-  lcd.noAutoscroll();
-
   // log temperature
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -151,7 +162,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
     delay(50);
   }
 
-  delay(3000);
+  delay(2500);
 
   // log humudity
   lcd.clear();
@@ -168,7 +179,7 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
     lcd.write(humChars[i]);
     delay(50);
   }
-  delay(3000);
+  delay(2500);
 
   // log co2
   lcd.clear();
@@ -186,7 +197,33 @@ void PrintDataToLCD(float temperature, float humidity, float co2) {
     delay(50);
   }
 
-  delay(3000);
+  delay(2500);
+
+  // log window status
+  lcd.clear();
+  lcd.setCursor(0, 0);
+
+  String windowStatus = "";
+
+  if (windowIsOpen) {
+    windowStatus = "OPEN";
+  } else {
+    windowStatus = "CLOSED";
+  }
+
+  String windowMessage = "Windows: " + windowStatus;
+  int windowMessageLength = windowMessage.length();
+
+  char wChars[windowMessageLength];
+
+  windowMessage.toCharArray(wChars, windowMessageLength + 1);
+
+  for (int i = 0; i < windowMessageLength; i++) {
+    lcd.write(wChars[i]);
+    delay(50);
+  }
+
+  delay(2500);
 }
 
 void WriteMessageToLCD(String message) {
@@ -208,12 +245,13 @@ void WriteMessageToLCD(String message) {
   }
 }
 
-void SendSerialMessage(float temperature, float humidity, float co2) {
+void SendSerialMessage(float temperature, float humidity, float co2, bool windowsOpen) {
   String temperatureStr = "\"temperature\": " + String(temperature);
   String humidityStr = "\"humidity\": " + String(humidity);
   String co2Str = "\"co2\": " + String(co2);
+  String windowsStr = "\"windowsOpen\": " + String(windowsOpen);
 
-  String jsonMessage = "{ " + temperatureStr + ", " + humidityStr + ", " + co2Str + " }";
+  String jsonMessage = "{ " + temperatureStr + ", " + humidityStr + ", " + co2Str + ", " + windowsStr + " }";
 
   Serial.println(jsonMessage);
 }
@@ -235,16 +273,34 @@ void HandleGreenLED(bool on) {
 }
 
 void ReadAndProcessSerialMessage(String message) {
-  if (message.toLowerCase() == "open") {
+
+  if (message == "OPEN") {
     OpenWindow();
-  } else if (message.toLowerCase() == "close") {
+  } else if (message == "CLOSE") {
     CloseWindow();
-  } else if (message.toLowerCase() == "alert"){
-    alert = true;
-  } else if (message.toLowerCase() == " no alert") {
     alert = false;
+  } else if (message == "ALERT") {
+    alert = true;
+  } else if (message == "DATA") {
+     lcd.clear();
+
+    float humidity = dht.readHumidity();
+    float temp = dht.readTemperature();
+    float co2 = GetCo2();
+
+    SendSerialMessage(temp, humidity, co2, windowIsOpen);
+
+    PrintDataToLCD(temp, humidity, co2);
+
+    if (alert) {
+      HandleRedLED(true);
+      HandleGreenLED(false);
+    } else {
+      HandleRedLED(false);
+      HandleGreenLED(true);
+    }
   }
-  else {
+   else {
     WriteMessageToLCD(message);
   }
 }
