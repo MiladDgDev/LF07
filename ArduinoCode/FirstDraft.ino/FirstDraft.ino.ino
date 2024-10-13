@@ -42,6 +42,10 @@ bool alert = false;
 
 bool isReading = false;
 
+float humidity = 0;
+float temp = -100;
+float co2 = 0;
+
 void setup() {
 
   Serial.begin(9600);  // Device to serial monitor feedback
@@ -74,40 +78,34 @@ void setup() {
 }
 
 void loop() {
+  Serial.read();
+
+  if (alert) {
+    HandleRedLED(true);
+    HandleGreenLED(false);
+  } else {
+    HandleRedLED(false);
+    HandleGreenLED(true);
+  }
+
+  if (millis() - getDataTimer >= 15000 && isReading != true) {
+    lcd.clear();
+
+    humidity = dht.readHumidity();
+    temp = dht.readTemperature();
+    co2 = GetCo2();
+
+    PrintDataToLCD(temp, humidity, co2);
+
+    getDataTimer = millis();
+  }
+
   if (Serial.available() > 0) {
     isReading = true;
     String message = Serial.readStringUntil('\n');
     ReadAndProcessSerialMessage(message);
     isReading = false;
   }
-
-  // if (millis() - getDataTimer >= 15000 && isReading != true) {
-  //   lcd.clear();
-
-  //   float humidity = dht.readHumidity();
-  //   float temp = dht.readTemperature();
-  //   float co2 = GetCo2();
-
-  //   SendSerialMessage(temp, humidity, co2, windowIsOpen);
-
-  //   // if (Serial.available() > 0) {
-  //   //   String message = Serial.readString();
-  //   //   WriteMessageToLCD(message);
-  //   //   ReadAndProcessSerialMessage(message);
-  //   // } else {
-  //   PrintDataToLCD(temp, humidity, co2);
-  //   // }
-
-  //   if (alert) {
-  //     HandleRedLED(true);
-  //     HandleGreenLED(false);
-  //   } else {
-  //     HandleRedLED(false);
-  //     HandleGreenLED(true);
-  //   }
-
-  //   getDataTimer = millis();
-  // }
 }
 
 void OpenWindow() {
@@ -282,25 +280,8 @@ void ReadAndProcessSerialMessage(String message) {
   } else if (message == "ALERT") {
     alert = true;
   } else if (message == "DATA") {
-     lcd.clear();
-
-    float humidity = dht.readHumidity();
-    float temp = dht.readTemperature();
-    float co2 = GetCo2();
-
     SendSerialMessage(temp, humidity, co2, windowIsOpen);
-
-    PrintDataToLCD(temp, humidity, co2);
-
-    if (alert) {
-      HandleRedLED(true);
-      HandleGreenLED(false);
-    } else {
-      HandleRedLED(false);
-      HandleGreenLED(true);
-    }
-  }
-   else {
+  } else {
     WriteMessageToLCD(message);
   }
 }
