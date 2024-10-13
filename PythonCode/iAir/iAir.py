@@ -92,6 +92,7 @@ def main():
                 print("Serial Communication with the Arduino failed for 5 consecutive Time. "
                       "Shutting program down. Please try again later.")
                 is_canceled = True
+                break
             print("Trying again in 5 seconds!")
             time.sleep(5)
             serial_communication_tries += 1
@@ -101,6 +102,7 @@ def main():
             if public_ip_tries >= 4:
                 print("Public IP retrieval failed after 5 attempts. Shutting program down. Please try again later.")
                 is_canceled = True
+                break
             print("Trying again in 5 seconds!")
             time.sleep(5)
             public_ip_tries += 1
@@ -110,6 +112,7 @@ def main():
             if weather_api_tries >= 4:
                 print("Weather API still offline after 5 attempts. Shutting program down. Please try again later.")
                 is_canceled = True
+                break
             print("Trying again in 5 seconds!")
             time.sleep(5)
             weather_api_tries += 1
