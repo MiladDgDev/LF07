@@ -19,7 +19,7 @@ def read_serial_port() -> dict:
 
     ser = serial.Serial(
         port='/dev/ttyACM0',
-        baudrate=9600,
+        baudrate=115200,
         timeout=1
     )
 
@@ -58,7 +58,7 @@ def write_to_serial_port(message: str) -> bool:
 
     ser = serial.Serial(
         port='/dev/ttyACM0',
-        baudrate=9600,
+        baudrate=115200,
         timeout=1
     )
 

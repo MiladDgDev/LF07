@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include "MHZ19.h"
 #include <SoftwareSerial.h>
-#include <string.h>
 
 // DHT Sensor
 #define DHTPIN 13
@@ -48,7 +47,7 @@ float co2 = 0;
 
 void setup() {
 
-  Serial.begin(9600);  // Device to serial monitor feedback
+  Serial.begin(115200);  // Device to serial monitor feedback
 
   // start DHT
   dht.begin();
@@ -103,7 +102,8 @@ void loop() {
   if (Serial.available() > 0) {
     isReading = true;
     String message = Serial.readStringUntil('\n');
-    ReadAndProcessSerialMessage(message);
+    WriteMessageToLCD(message);
+    // ReadAndProcessSerialMessage(message);
     isReading = false;
   }
 }
