@@ -29,13 +29,13 @@ def read_serial_port() -> dict:
             if ser.is_open:
                 print(f"Connected to {ser.port}")
 
-                data = ser.readline().decode('utf-8').strip()
+            data = ser.readline().decode('utf-8').strip()
 
-                if data:
-                    print(f"Received: {data}")
-                    data_dict = json.loads(data)
-                    print(data_dict)
-                    return data_dict
+            if data:
+                print(f"Received: {data}")
+                data_dict = json.loads(data)
+                print(data_dict)
+                return data_dict
 
             raise ArduinoOfflineError(message="Extracting data from the Arduino failed!")
 
@@ -53,7 +53,6 @@ def read_serial_port() -> dict:
 
 
 def write_to_serial_port(message: str) -> bool:
-
     ser = serial.Serial(
         port='/dev/ttyACM0',
         baudrate=9600,
