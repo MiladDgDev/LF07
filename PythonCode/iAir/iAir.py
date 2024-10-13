@@ -34,10 +34,13 @@ def process_data(data: types_enums.IndoorConditions):
             repository.bad_indoor_condition["co2_too_high"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
 
+        print(f"Indoor conditions: {repository.indoor_conditions}")
+
         for key in repository.bad_indoor_condition.keys():
             if repository.bad_indoor_condition[key]:
                 print(f"Issue: {key}")
-            print('\n')
+
+        print('\n')
 
     except Exception as e:
         print(e)
@@ -46,11 +49,11 @@ def process_data(data: types_enums.IndoorConditions):
 
 
 def start_activity():
-    print("OPEN THE WINDOWS!!!\n")
+    print("OPEN THE WINDOWS!!!\n\n")
 
 
 def stop_activity():
-    print("CLOSE THE WINDOWS!!!\n")
+    print("CLOSE THE WINDOWS!!!\n\n")
 
 
 def main():
@@ -124,7 +127,7 @@ def main():
             time.sleep(5)
             weather_api_tries += 1
             continue
-            
+
         except Exception as e:
             print(e)
             is_canceled = True

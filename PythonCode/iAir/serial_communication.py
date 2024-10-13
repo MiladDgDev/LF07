@@ -26,7 +26,7 @@ def read_serial_port() -> dict:
 
     try:
         if ser.is_open:
-            print(f"Connected to {ser.port}")
+            print(f"Connected to Arduino! Waiting for the indoor conditions data!")
         else:
             raise ArduinoOfflineError("Arduino offline!")
 
@@ -35,9 +35,10 @@ def read_serial_port() -> dict:
             data = ser.readline().decode('utf-8').strip()
 
             if data:
-                print(f"Received: {data}")
                 data_dict = json.loads(data)
-                print(data_dict)
+                for key in data_dict.keys():
+                    print(f"{key}: {data_dict[key]}")
+                print('\n')
                 return data_dict
 
     except KeyboardInterrupt:
