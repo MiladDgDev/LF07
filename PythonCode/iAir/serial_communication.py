@@ -63,7 +63,7 @@ def write_to_serial_port(message: str) -> bool:
     try:
         if ser.is_open:
             print(f"Connected to {ser.port}")
-            ser.write(message.encode('utf'))
+            ser.write(message)
             ser.close()
             return True
         else:
@@ -72,9 +72,8 @@ def write_to_serial_port(message: str) -> bool:
         print(e.message)
         raise
     except serial.SerialException as e:
-        print(e.message)
+        print(e)
         raise
     except Exception as e:
         print(e)
         raise
-

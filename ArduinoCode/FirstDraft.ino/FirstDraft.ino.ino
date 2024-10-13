@@ -81,7 +81,9 @@ void loop() {
     SendSerialMessage(temp, humidity, co2, windowIsOpen);
 
     if (Serial.available() > 0) {
-      ReadAndProcessSerialMessage(Serial.readString());
+      String message = Serial.readString();
+      Serial.println(message);
+      ReadAndProcessSerialMessage(message);
     } else {
       PrintDataToLCD(temp, humidity, co2);
     }
