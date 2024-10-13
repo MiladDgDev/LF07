@@ -265,7 +265,6 @@ void ReadAndProcessSerialMessage(String message) {
   String copiedMessage = message;
 
   message.toLowerCase();
-
   if (message == "open") {
     OpenWindow();
   } else if (message == "close") {
