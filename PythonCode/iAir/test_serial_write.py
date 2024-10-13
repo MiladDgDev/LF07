@@ -18,9 +18,6 @@ def read_serial_port() -> dict:
         print(f"Connected to {ser.port}")
 
         try:
-            ser.reset_input_buffer()  # Clears the input buffer
-            ser.reset_output_buffer()  # Clears the output buffer
-
             ser.write(b'DATA')
             time.sleep(1)
 
@@ -29,7 +26,7 @@ def read_serial_port() -> dict:
 
             ser.reset_input_buffer()  # Clears the input buffer
             ser.reset_output_buffer()  # Clears the output buffer
-            
+
         except Exception as e:
             print(e.message)
 
