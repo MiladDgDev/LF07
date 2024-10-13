@@ -7,7 +7,7 @@ import json
 class ArduinoOfflineError(Exception):
     """Exception raised forArduino being offline."""
 
-    def __init__(self,  message):
+    def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
@@ -16,59 +16,47 @@ class ArduinoOfflineError(Exception):
 
 
 def read_serial_port() -> dict:
-
     is_active: bool = True
 
     ser = serial.Serial(
         port='/dev/ttyACM0',
-        baudrate=115200,
+        baudrate=9600,
         timeout=1
     )
-    time.sleep(2)
 
-    if ser.is_open:
-        print(f"Connected to {ser.port}")
+    try:
+        while is_active:
+            if ser.is_open:
+                print(f"Connected to {ser.port}")
 
-    while is_active:
-        try:
-            ser.reset_input_buffer()  # Clears the input buffer
-            ser.reset_output_buffer()  # Clears the output buffer
+                data = ser.readline().decode('utf-8').strip()
 
-            ser.write(b'DATA')
-
-            while ser.in_waiting > 0:
-                response = ser.readline().decode('utf-8').rstrip()
-                print(f"Received: {response}")
-
-            data = ser.readline().decode('utf-8').strip()
-
-            if data:
-                print(f"Received: {data}")
-                data_dict = json.loads(data)
-                print(data_dict)
-                return data_dict
+                if data:
+                    print(f"Received: {data}")
+                    data_dict = json.loads(data)
+                    print(data_dict)
+                    return data_dict
 
             raise ArduinoOfflineError(message="Extracting data from the Arduino failed!")
 
-        except KeyboardInterrupt:
-            print("Exiting program...")
-            is_active = False
-            raise
-        except ArduinoOfflineError as e:
-            print(e.message)
-            is_active = False
-            raise
-        finally:
-            ser.close()
+    except KeyboardInterrupt:
+        print("Exiting program...")
+        is_active = False
+        raise
+
+    except ArduinoOfflineError as e:
+        print(e.message)
+        is_active = False
+        raise
+    finally:
+        ser.close()
 
 
 def write_to_serial_port(message: str) -> bool:
 
-    is_active: bool = True
-
     ser = serial.Serial(
         port='/dev/ttyACM0',
-        baudrate=115200,
+        baudrate=9600,
         timeout=1
     )
 

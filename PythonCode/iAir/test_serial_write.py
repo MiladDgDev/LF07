@@ -31,4 +31,5 @@ def read_serial_port() -> dict:
         finally:
             ser.close()
 
+
 read_serial_port()

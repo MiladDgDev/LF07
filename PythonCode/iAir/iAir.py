@@ -38,6 +38,9 @@ def process_data(data: types_enums.IndoorConditions):
         if my_co2 >= 850:
             repository.bad_indoor_condition["co2_too_high"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
+
+        print(repository.bad_indoor_condition)
+        
     except Exception as e:
         print(e)
         print("Analyzing the indoor conditions failed!")
