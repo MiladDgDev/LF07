@@ -3,6 +3,8 @@ import time
 import serial
 import json
 
+import types_enums
+
 
 class ArduinoOfflineError(Exception):
     """Exception raised forArduino being offline."""
@@ -15,7 +17,7 @@ class ArduinoOfflineError(Exception):
         return f"{self.message}"
 
 
-def read_serial_port() -> dict:
+def read_serial_port() -> types_enums.IndoorConditions:
     is_active: bool = True
 
     ser = serial.Serial(

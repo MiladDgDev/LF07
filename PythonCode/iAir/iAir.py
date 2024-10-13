@@ -48,15 +48,50 @@ def process_data(data: types_enums.IndoorConditions):
         raise
 
 
-def start_activity():
-    print("OPEN THE WINDOWS!!!\n\n")
+def start_activity(indoor_conditions: types_enums.IndoorConditions):
+    if repository.bad_indoor_condition['temperature_too_high']:
+        if indoor_conditions['temperature'] > repository.regional_temperature:
+            print("OPEN THE WINDOWS!!!\n\n")
+            activity_has_started = True
+        else:
+            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+                  f"Outdoors Temperature: {repository.regional_temperature}")
+
+    if repository.bad_indoor_condition['temperature_too_low']:
+        if indoor_conditions['temperature'] < repository.regional_temperature:
+            print("OPEN THE WINDOWS!!!\n\n")
+            activity_has_started = True
+        else:
+            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+                  f"Outdoors Temperature: {repository.regional_temperature}")
+
+    if repository.bad_indoor_condition['humidity_too_high']:
+        if indoor_conditions['humidity'] > repository.regional_humidity:
+            print("OPEN THE WINDOWS!!!\n\n")
+            activity_has_started = True
+        else:
+            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+                  f"Outdoors Humidity: {repository.regional_humidity}")
+
+    if repository.bad_indoor_condition['humidity_too_low']:
+        if indoor_conditions['humidity'] < repository.regional_humidity:
+            print("OPEN THE WINDOWS!!!\n\n")
+            activity_has_started = True
+        else:
+            print("Situation outdoors is worse! Opening the windows won't be helpful!"
+                  f"Outdoors Humidity: {repository.regional_humidity}")
+
+    if repository.bad_indoor_condition['co2_too_high']:
+        print("OPEN THE WINDOWS!!!\n\n")
 
 
 def stop_activity():
     print("CLOSE THE WINDOWS!!!\n\n")
+    activity_has_started = False
 
 
 def main():
+    global activity_has_started
     is_canceled: bool = False
 
     public_ip_tries: int = 0
@@ -88,7 +123,7 @@ def main():
                 if activity_has_started:
                     continue
                 else:
-                    start_activity()
+                    start_activity(indoors_conditions)
 
         except KeyboardInterrupt as e:
             is_canceled = True
