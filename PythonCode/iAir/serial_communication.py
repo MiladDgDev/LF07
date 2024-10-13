@@ -37,15 +37,16 @@ def read_serial_port() -> dict:
             ser.write(b'DATA')
 
             while ser.in_waiting > 0:
+                response = ser.readline().decode('utf-8').rstrip()
+                print(f"Received: {response}")
 
-                data = ser.readline().decode('utf-8').strip()
+            data = ser.readline().decode('utf-8').strip()
+
+            if data:
                 print(f"Received: {data}")
-
-                if data:
-                    print(f"Received: {data}")
-                    data_dict = json.loads(data)
-                    print(data_dict)
-                    return data_dict
+                data_dict = json.loads(data)
+                print(data_dict)
+                return data_dict
 
             raise ArduinoOfflineError(message="Extracting data from the Arduino failed!")
 

@@ -246,6 +246,8 @@ void ReadAndProcessSerialMessage(String message) {
   } else if (message == "ALERT") {
     alert = true;
   } else if (message == "DATA") {
+    Serial.read();
+    
     SendSerialMessage(temp, humidity, co2, windowIsOpen);
   } else {
     WriteMessageToLCD(message);
