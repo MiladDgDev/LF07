@@ -303,9 +303,9 @@ def get_activities() -> [dict]:
         cursor.execute(select_query)
 
         result = cursor.fetchall()
-        print(result)
+        
         my_db_connection.close()
-        print(len(result))
+
         for i in range(len(result)):
             row = result[i]
             activity = types_enums.Activity(
