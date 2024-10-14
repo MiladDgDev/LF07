@@ -314,6 +314,7 @@ def get_activities() -> [dict]:
                 command=types_enums.get_command(row[5]),
                 activity_time=row[6].strftime("%Y-%m-%d %H:%M:%S")
             )
+            print(activity)
             activities.append(activity)
 
         return activities
