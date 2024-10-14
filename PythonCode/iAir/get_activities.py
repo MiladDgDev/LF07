@@ -3,4 +3,4 @@ import json
 
 activities = db_service.get_activities()
 
-print(activities)
+print(json.dumps(activities, indent=4))

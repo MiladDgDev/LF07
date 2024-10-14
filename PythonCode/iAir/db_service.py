@@ -314,7 +314,7 @@ def get_activities() -> [dict]:
                     activity_time=row[6].strftime("%Y-%m-%d %H:%M:%S")
                 )
             )
-            my_db_connection.close()
+        my_db_connection.close()
         return activities
     except Exception as e:
         print(e.args)
