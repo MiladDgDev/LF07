@@ -304,6 +304,8 @@ def get_activities() -> [dict]:
         print(result)
         my_db_connection.close()
 
+        print(result.count())
+
         for row in result:
             activity = types_enums.Activity(
                 activity_id=row[0],
