@@ -18,6 +18,10 @@ class ArduinoOfflineError(Exception):
 
 
 def read_serial_port() -> types_enums.IndoorConditions:
+    """
+
+    :rtype: object
+    """
     is_active: bool = True
 
     ser = serial.Serial(
