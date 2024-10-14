@@ -30,7 +30,6 @@ class IndoorConditions(TypedDict):
     co2: float
 
 
-
 class BadIndoorCondition(TypedDict):
     temperature_too_high: bool
     temperature_too_low: bool
