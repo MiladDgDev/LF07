@@ -306,6 +306,13 @@ def get_activities() -> [dict]:
         print(len(result))
         for i in range(len(result)):
             row = result[i]
+            print(row[0])
+            print(row[1])
+            print(row[2])
+            print(row[3])
+            print(row[4])
+            print(row[5])
+            print(row[6])
             activity = types_enums.Activity(
                 activity_id=row[0],
                 air_condition=types_enums.get_condition(row[1]),
