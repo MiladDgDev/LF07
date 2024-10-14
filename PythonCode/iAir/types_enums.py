@@ -42,11 +42,11 @@ def get_condition(index: int):
     if index < 1 or index > len(Conditions):
         return list(Conditions)[1].name
     else:
-        return list(Conditions)[index].name
+        return list(Conditions)[index - 1].name
 
 
 def get_command(index: int):
     if index < 1 or index > len(Commands):
         return list(Commands)[1].name
     else:
-        return list(Commands)[index].name
+        return list(Commands)[index - 1].name
