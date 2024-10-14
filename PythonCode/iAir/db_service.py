@@ -301,7 +301,7 @@ def get_activities() -> [dict]:
         cursor.execute(select_query)
 
         result = cursor.fetchall()
-
+        print(result)
         for row in result:
             activities.append(
                 types_enums.Activity(
@@ -314,6 +314,7 @@ def get_activities() -> [dict]:
                     activity_time=row[6].strftime("%Y-%m-%d %H:%M:%S")
                 )
             )
+
         my_db_connection.close()
         return activities
     except Exception as e:
