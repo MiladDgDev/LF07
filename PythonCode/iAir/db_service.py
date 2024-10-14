@@ -2,16 +2,16 @@ import mysql.connector as db_connector
 import types_enums
 
 db_server_config = {
-'host': 'localhost',
-'user': 'root',
-'password': 'test-123'
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'test-123'
 }
 
 db_config = {
-'host': 'localhost',
-'user': 'root',
-'password': 'test-123',
-'database': 'iAir'
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'test-123',
+    'database': 'iAir'
 }
 
 
@@ -74,7 +74,7 @@ def setup_tables():
     try:
         cursor = my_db_connection.cursor()
 
-        create_air_condition_table: str =(
+        create_air_condition_table: str = (
             'CREATE TABLE Air_Condition ( '
             'Condition_ID 			INT AUTO_INCREMENT PRIMARY KEY, '
             'Condition_Name			VARCHAR(50), '
@@ -302,20 +302,20 @@ def get_activities() -> [dict]:
 
         result = cursor.fetchall()
         print(result)
-        for row in result:
-            activities.append(
-                types_enums.Activity(
-                    activity_id=row[0],
-                    air_condition=types_enums.get_condition(row[1]),
-                    temperature=str(row[2]),
-                    humidity=str(row[3]),
-                    carbon_dioxide_level=str(row[4]),
-                    command=types_enums.get_command(row[5]),
-                    activity_time=row[6].strftime("%Y-%m-%d %H:%M:%S")
-                )
-            )
-
         my_db_connection.close()
+
+        for row in result:
+            activity = types_enums.Activity(
+                activity_id=row[0],
+                air_condition=types_enums.get_condition(row[1]),
+                temperature=str(row[2]),
+                humidity=str(row[3]),
+                carbon_dioxide_level=str(row[4]),
+                command=types_enums.get_command(row[5]),
+                activity_time=row[6].strftime("%Y-%m-%d %H:%M:%S")
+            )
+            activities.append(activity)
+
         return activities
     except Exception as e:
         print(e.args)
