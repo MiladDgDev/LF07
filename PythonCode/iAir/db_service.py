@@ -313,6 +313,8 @@ def get_activities() -> [dict]:
             print(row[4])
             print(row[5])
             print(row[6])
+            print(types_enums.get_condition(row[1]))
+            print(row[6].strftime("%Y-%m-%d %H:%M:%S"))
             activity = types_enums.Activity(
                 activity_id=row[0],
                 air_condition=types_enums.get_condition(row[1]),
