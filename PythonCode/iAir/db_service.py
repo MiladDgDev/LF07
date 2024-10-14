@@ -304,7 +304,8 @@ def get_activities() -> [dict]:
         print(result)
         my_db_connection.close()
         print(len(result))
-        for row in result:
+        for i in range(len(result)):
+            row = result[i]
             activity = types_enums.Activity(
                 activity_id=row[0],
                 air_condition=types_enums.get_condition(row[1]),
