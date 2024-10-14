@@ -24,18 +24,31 @@ def process_data(data: types_enums.IndoorConditions):
         if my_temperature <= 14:
             repository.bad_indoor_condition['temperature_too_low'] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
-        if my_temperature >= 28:
+        elif my_temperature >= 28:
             repository.bad_indoor_condition['temperature_too_high'] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
+        else:
+            repository.bad_indoor_condition['temperature_too_low'] = False
+            repository.bad_indoor_condition['temperature_too_high'] = False
+            repository.indoor_conditions = types_enums.Conditions.DESIRABLE
+
         if my_humidity <= 30:
             repository.bad_indoor_condition["humidity_too_low"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
-        if my_humidity >= 50:
+        elif my_humidity >= 50:
             repository.bad_indoor_condition["humidity_too_high"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
+        else:
+            repository.bad_indoor_condition["humidity_too_high"] = False
+            repository.bad_indoor_condition["humidity_too_low"] = False
+            repository.indoor_conditions = types_enums.Conditions.DESIRABLE
+
         if my_co2 >= 850:
             repository.bad_indoor_condition["co2_too_high"] = True
             repository.indoor_conditions = types_enums.Conditions.UNDESIRABLE
+        else:
+            repository.bad_indoor_condition["co2_too_high"] = False
+            repository.indoor_conditions = types_enums.Conditions.DESIRABLE
 
         if repository.indoor_conditions == types_enums.Conditions.UNDESIRABLE:
             print(f"Indoor conditions: Undesirable!\n")
